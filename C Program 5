@@ -1,0 +1,38 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
+
+bool isA(char str[], int index) {
+    int len = strlen(str);
+    if (index >= len)
+        return true; // Reached end of string, A can produce ε
+    if (str[index] == '1')
+        return isA(str, index + 1); // A produces 1A
+    return false; // A cannot produce anything other than '1'
+}
+
+bool isS(char str[], int start, int end) {
+    if (start > end)
+        return true; // S can produce ε
+    if (str[start] == '0' && str[end] == '0')
+        return isS(str, start + 1, end - 1); // S produces 0S0
+    return isA(str, start); // S produces A
+}
+
+bool isAccepted(char str[]) {
+    int len = strlen(str);
+    return isS(str, 0, len - 1);
+}
+
+int main() {
+    char input[100];
+    printf("Enter the string: ");
+    scanf("%s", input);
+
+    if (isAccepted(input))
+        printf("String is accepted.\n");
+    else
+        printf("String is not accepted.\n");
+
+    return 0;
+}
