@@ -1,0 +1,54 @@
+#include <stdio.h>
+#include <string.h>
+
+// Function prototypes
+int isValid(char* str);
+
+int main() {
+    char input[100];
+
+    // Prompt user for input
+    printf("Enter a string of '0' and '1': ");
+    scanf("%s", input);
+
+    // Check if the input string is accepted by the CFG
+    if (isValid(input)) {
+        printf("The string belongs to the language defined by the CFG.\n");
+    } else {
+        printf("The string does not belong to the language defined by the CFG.\n");
+    }
+
+    return 0;
+}
+
+// Function to check if the given string matches the CFG rules
+int isValid(char* str) {
+    int len = strlen(str);
+
+    // The length of the string must be at least 3 for it to contain '101'
+    if (len < 3) {
+        return 0;
+    }
+
+    // Look for the substring '101' in the string
+    for (int i = 0; i <= len - 3; i++) {
+        if (str[i] == '1' && str[i+1] == '0' && str[i+2] == '1') {
+            // Check if the prefix (before '101') and suffix (after '101') are valid sequences
+            for (int j = 0; j < i; j++) {
+                if (str[j] != '0' && str[j] != '1') {
+                    return 0;
+                }
+            }
+            for (int j = i + 3; j < len; j++) {
+                if (str[j] != '0' && str[j] != '1') {
+                    return 0;
+                }
+            }
+            // If both prefix and suffix are valid, the string is valid
+            return 1;
+        }
+    }
+
+    // If '101' is not found, the string is invalid
+    return 0;
+}
