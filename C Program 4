@@ -1,0 +1,48 @@
+#include <stdio.h>
+#include <string.h>
+
+// Function prototypes
+int isValid(char* str, int left, int right);
+
+int main() {
+    char input[100];
+
+    // Prompt user for input
+    printf("Enter a string of '0' and '1': ");
+    scanf("%s", input);
+
+    // Check if the input string is accepted by the CFG
+    if (isValid(input, 0, strlen(input) - 1)) {
+        printf("The string belongs to the language defined by the CFG.\n");
+    } else {
+        printf("The string does not belong to the language defined by the CFG.\n");
+    }
+
+    return 0;
+}
+
+// Function to check if the substring str[left:right] matches the CFG rules
+int isValid(char* str, int left, int right) {
+    // Base case: empty string is valid (ε)
+    if (left > right) {
+        return 1;
+    }
+
+    // Base case: single character strings "0" or "1"
+    if (left == right && (str[left] == '0' || str[left] == '1')) {
+        return 1;
+    }
+
+    // Check if the string matches the pattern 0S0
+    if (str[left] == '0' && str[right] == '0' && isValid(str, left + 1, right - 1)) {
+        return 1;
+    }
+
+    // Check if the string matches the pattern 1S1
+    if (str[left] == '1' && str[right] == '1' && isValid(str, left + 1, right - 1)) {
+        return 1;
+    }
+
+    // If none of the above rules match, the string is invalid
+    return 0;
+}
