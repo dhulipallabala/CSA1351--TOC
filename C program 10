@@ -1,0 +1,91 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_STATES 10
+
+// Function prototypes
+void findEpsilonClosure(int state, int nfa[MAX_STATES][MAX_STATES], int closure[], int numStates);
+void addState(int state, int closure[]);
+void displayClosures(int closures[MAX_STATES][MAX_STATES], int numStates);
+
+int main() {
+    int nfa[MAX_STATES][MAX_STATES] = {0};
+    int closures[MAX_STATES][MAX_STATES] = {0};
+    int numStates, numTransitions;
+
+    // Read number of states and transitions
+    printf("Enter the number of states: ");
+    scanf("%d", &numStates);
+    printf("Enter the number of ε-transitions: ");
+    scanf("%d", &numTransitions);
+
+    // Read the ε-transitions
+    printf("Enter the ε-transitions (format: state1 state2 for state1 -> state2):\n");
+    for (int i = 0; i < numTransitions; i++) {
+        int state1, state2;
+        scanf("%d %d", &state1, &state2);
+        nfa[state1][state2] = 1;  // ε-transition from state1 to state2
+    }
+
+    // Calculate ε-closures for each state
+    for (int i = 0; i < numStates; i++) {
+        findEpsilonClosure(i, nfa, closures[i], numStates);
+    }
+
+    // Display the ε-closures for each state
+    displayClosures(closures, numStates);
+
+    return 0;
+}
+
+// Function to find the ε-closure of a state
+void findEpsilonClosure(int state, int nfa[MAX_STATES][MAX_STATES], int closure[], int numStates) {
+    int stack[MAX_STATES], top = -1;
+    int visited[MAX_STATES] = {0};
+
+    // Initialize the stack with the initial state
+    stack[++top] = state;
+    visited[state] = 1;
+
+    // Perform DFS to find all states reachable via ε-moves
+    while (top >= 0) {
+        int currentState = stack[top--];
+        addState(currentState, closure);
+
+        for (int i = 0; i < numStates; i++) {
+            if (nfa[currentState][i] && !visited[i]) {
+                stack[++top] = i;
+                visited[i] = 1;
+            }
+        }
+    }
+}
+
+// Function to add a state to the closure array
+void addState(int state, int closure[]) {
+    for (int i = 0; closure[i] != -1; i++) {
+        if (closure[i] == state) {
+            return;
+        }
+    }
+
+    for (int i = 0; i < MAX_STATES; i++) {
+        if (closure[i] == -1) {
+            closure[i] = state;
+            closure[i + 1] = -1;
+            return;
+        }
+    }
+}
+
+// Function to display the ε-closures for each state
+void displayClosures(int closures[MAX_STATES][MAX_STATES], int numStates) {
+    printf("\nε-closures for each state:\n");
+    for (int i = 0; i < numStates; i++) {
+        printf("ε-closure(%d): { ", i);
+        for (int j = 0; closures[i][j] != -1; j++) {
+            printf("%d ", closures[i][j]);
+        }
+        printf("}\n");
+    }
+}
